@@ -100,3 +100,55 @@ func (u *UserService) GetUserInfo(userId uint64) (*model.User, error) {
 
 	return &user, nil
 }
+
+// ResetPassword 重置密码（验证旧密码，更新新密码）
+func (u *UserService) ResetPassword(userId uint64, oldPassword string, newPassword string) error {
+	// 开启事务（单表更新也可省略，此处为保持规范）
+	tx := model.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	// 1. 查询当前用户信息
+	var user model.User
+	if err := tx.Where("id = ?", userId).First(&user).Error; err != nil {
+		tx.Rollback()
+		if gorm.IsRecordNotFoundError(err) {
+			return errors.New("用户不存在")
+		}
+		return errors.New("查询用户信息失败")
+	}
+
+	// 2. 验证旧密码是否正确
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
+		tx.Rollback()
+		return errors.New("旧密码错误")
+	}
+
+	// 3. 加密新密码（使用bcrypt算法，与注册时一致）
+	newPwdHash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("加密新密码失败")
+	}
+
+	// 4. 更新用户密码
+	if err := tx.Model(&model.User{}).Where("id = ?", userId).Update("password", string(newPwdHash)).Error; err != nil {
+		tx.Rollback()
+		return errors.New("更新密码失败")
+	}
+
+	// 提交事务
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return errors.New("重置密码事务提交失败")
+	}
+
+	return nil
+}
