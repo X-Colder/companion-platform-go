@@ -1,0 +1,22 @@
+# 服务器配置
+server:
+  port: 8080
+  mode: debug # release/prod/debug
+
+# 数据库配置
+mysql:
+  dsn: "root:123456@tcp(127.0.0.1:3306)/companion_platform?charset=utf8mb4&parseTime=True&loc=Local"
+  max_idle_conns: 10
+  max_open_conns: 100
+  conn_max_lifetime: 3600
+
+# JWT配置
+jwt:
+  secret: "companion_platform_2025_secret" # 自定义密钥，生产环境请修改为复杂字符串
+  expire_hours: 24 # token有效期（小时）
+
+# 文件上传配置
+upload:
+  base_path: "./static/upload/"
+  max_size: 5 # 单个文件最大大小（MB）
+  allow_ext: [".jpg", ".jpeg", ".png", ".gif"] # 允许上传的文件后缀

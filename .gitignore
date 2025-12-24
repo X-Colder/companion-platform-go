@@ -1,0 +1,33 @@
+# Go 编译产物
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+/dist
+/bin
+/pkg
+
+# 依赖缓存
+/go.sum
+/vendor/
+
+# 日志文件
+*.log
+/logs/
+
+# 配置文件（敏感信息，如数据库密码）
+/conf/app.yaml（若需上传配置模板，可改为 app.yaml.bak，本地保留 app.yaml）
+/.env
+
+# 静态资源（上传的图片，可选，若无需同步图片可添加）
+/static/upload/
+/static/tmp/
+
+# IDE 配置文件
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
