@@ -23,7 +23,7 @@ func (u *UserController) Login(c *gin.Context) {
 	}
 
 	// 调用服务层
-	token, userInfo, err := service.UserService{}.Login(req.Phone, req.Password)
+	token, userInfo, err := (&service.UserService{}).Login(req.Phone, req.Password)
 	if err != nil {
 		utils.Fail(c, err.Error())
 		return
@@ -51,7 +51,7 @@ func (u *UserController) Register(c *gin.Context) {
 	}
 
 	// 调用服务层
-	err := service.UserService{}.Register(req.Phone, req.UserType, req.Password)
+	err := (&service.UserService{}).Register(req.Phone, req.UserType, req.Password)
 	if err != nil {
 		utils.Fail(c, err.Error())
 		return
@@ -76,7 +76,7 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 	}
 
 	// 调用服务层
-	err := service.UserService{}.UpdateProfile(userId.(uint64), req.Nickname, req.Avatar)
+	err := (&service.UserService{}).UpdateProfile(userId.(uint64), req.Nickname, req.Avatar)
 	if err != nil {
 		utils.Fail(c, err.Error())
 		return
@@ -89,7 +89,7 @@ func (u *UserController) UpdateProfile(c *gin.Context) {
 func (u *UserController) GetUserInfo(c *gin.Context) {
 	userId, _ := c.Get("user_id")
 
-	userInfo, err := service.UserService{}.GetUserInfo(userId.(uint64))
+	userInfo, err := (&service.UserService{}).GetUserInfo(userId.(uint64))
 	if err != nil {
 		utils.Fail(c, err.Error())
 		return
